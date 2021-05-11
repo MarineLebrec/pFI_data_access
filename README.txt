@@ -1,4 +1,4 @@
-This pFI_Analysis notebook is to be used for reading and analyzing raw programmable Flow Injection (pFI) data from GlobalFIA FloZF Software.
+This notebook is to be used for reading and analyzing raw programmable Flow Injection (pFI) data from GlobalFIA FloZF Software.
 
 Full description of FloZF software can be found at: https://www.globalfia.com/store/view/productdetails/virtuemart_product_id/151/virtuemart_category_id/12
 
