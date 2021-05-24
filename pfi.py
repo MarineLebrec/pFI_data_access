@@ -59,15 +59,15 @@ def abs_lookup(index):
     '''
     file_list = glob('master_data/*.pfl') #produces list of all pfl files in master_data directory 
 
-    indeces = [] 
+    indices = [] 
     absorbances = dict()
     A880_A510 = dict()
 
-    for file in file_list: #extracts the index numbers from each file as unique idenfiers and stores them in a list "indeces"
+    for file in file_list: #extracts the index numbers from each file as unique idenfiers and stores them in a list "indices"
         short_title = file.split('_')[2]
         name = short_title.split('.')
         number = int(name[0]) 
-        indeces.append(number)
+        indices.append(number)
     
         #Cleaning master_data time-series files to correspond to correct reference wavelength in first column of file 
         absorbances[number] = pd.read_csv(file, delimiter='\t', nrows=30)
@@ -82,16 +82,16 @@ def abs_lookup(index):
   
 #################################################################################    
 
-def multispectra(sampleindeces):
+def multispectra(sampleindices):
     
     '''
-    INPUTS: Values of sample indeces used for plotting multiple absorbance spectra (1-D array)
+    INPUTS: Values of sample indices used for plotting multiple absorbance spectra (1-D array)
     OUTPUTS: Absorbance spectra plot of all specified samples together
     '''
     
     spectra_list = glob('master_data/*.spectrum.pfl')
 
-    indeces = []
+    indices = []
     spectra = dict()
     A880 = dict()
 
@@ -99,12 +99,12 @@ def multispectra(sampleindeces):
         short_title = file.split('_')[2]
         name = short_title.split('.')
         number = int(name[0])
-        indeces.append(number) #produces list of all pfl files in master_data directory 
+        indices.append(number) #produces list of all pfl files in master_data directory 
         spectra[number] = pd.read_csv(file, delimiter='\t', skiprows=3) #imports all spectra from master_data directory
     
     
    #plots all specified spectra in one figure
-    for i in sampleindeces:
+    for i in sampleindices:
         plt.plot(spectra[i]['Wavelength (nm)'],spectra[i]['Absorbance'],label=str(i))
         plt.xlabel('Wavelength [$\lambda$]')
         plt.ylabel('Absorbance [mAU]')
@@ -117,10 +117,10 @@ def multispectra(sampleindeces):
 
 #################################################################################    
     
-def calib_plots(indeces):
+def calib_plots(indices):
     '''
     Inputs:
-    indeces - List of sample indeces used in calibration. Note: must be same length as the x variable [1-D array]
+    indices - List of sample indices used in calibration. Note: must be same length as the x variable [1-D array]
     Note: assumes calibration uses standards of 0uM, 0.5uM, 1.5uM, 3uM run in triplicates.
     
     Returns: 
@@ -135,7 +135,7 @@ def calib_plots(indeces):
     A880_A510 = dict()
     y = []
 
-    for number in indeces:
+    for number in indices:
         absorbances[number] = pd.read_csv('master_data/sample_'+str(number)+'.pfl', delimiter='\t', nrows=30)
         absorbances[number] = absorbances[number].replace(to_replace=absorbances[number]['sample name'][23], value='A880-A510', inplace=False, limit=None, regex=False, method='pad')
         absorbances[number] = absorbances[number].replace(to_replace=absorbances[number]['sample name'][16], value='A880-A775', inplace=False, limit=None, regex=False, method='pad')
@@ -145,7 +145,7 @@ def calib_plots(indeces):
         A880_A510[number] = float(absorbances[number][Abs]['sample']) #Completed dictionary which contains absorbance values at 880-510nm for any index.
             
         val = A880_A510[number]
-        y.append(val) #list of absorbance values for all specified indeces in input
+        y.append(val) #list of absorbance values for all specified indices in input
 
     
     results = stats.linregress(x,y) #calcualting linear least-squares regression from inputs
@@ -203,10 +203,10 @@ def calib_plots(indeces):
 
 #################################################################################    
 
-def calib_stats(indeces):
+def calib_stats(indices):
     '''
     Inputs:
-    indeces - List of sample indeces used in calibration. Note: must be same length as the x-array (array of known PO4 concentrations used in calibration)
+    indices - List of sample indices used in calibration. Note: must be same length as the x-array (array of known PO4 concentrations used in calibration)
     
     Outputs:
     Table containing figures of merit: calibration slope, calibration y-intercept, coefficient of determination (r-squared), standard deviation of the slope, 95% confidence intervals of the slope (using alpha = 0.05), Limit of Detection (nM). 
@@ -219,7 +219,7 @@ def calib_stats(indeces):
     y = []
 
 #Cleaning master_data time-series files to correspond to correct reference wavelength in first column of file 
-    for number in indeces:
+    for number in indices:
         absorbances[number] = pd.read_csv('master_data/sample_'+str(number)+'.pfl', delimiter='\t', nrows=30)
         absorbances[number] = absorbances[number].replace(to_replace=absorbances[number]['sample name'][23], value='A880-A510', inplace=False, limit=None, regex=False, method='pad')
         absorbances[number] = absorbances[number].replace(to_replace=absorbances[number]['sample name'][16], value='A880-A775', inplace=False, limit=None, regex=False, method='pad')
@@ -229,7 +229,7 @@ def calib_stats(indeces):
         A880_A510[number] = float(absorbances[number][Abs]['sample']) #Completed dictionary which contains absorbance values at 880-510nm for any index.
             
         abslist = A880_A510[number]
-        y.append(abslist) #list of absorbance values for all specified indeces in input
+        y.append(abslist) #list of absorbance values for all specified indices in input
 
     lin_results = stats.linregress(x,y) #linear least-squares regression fit
     a2 = lin_results[0] #linear slope 
@@ -289,10 +289,10 @@ def outlier_test(values):
 
 #################################################################################    
 
-def slope_from_index(indeces):
+def slope_from_index(indices):
     '''
     INPUTS: 
-    indeces = List of indeces used in a calibration [1-D array]
+    indices = List of indices used in a calibration [1-D array]
     OUTPUTS: Slope of linear regression model from calibration.
     '''
 
@@ -301,7 +301,7 @@ def slope_from_index(indeces):
     absorbances = []
     y = []
 
-    for i in indeces:
+    for i in indices:
         absorbances = pd.read_csv('master_data/sample_'+ str(i) + '.pfl', delimiter='\t', nrows=30)
         
         absorbances = absorbances.replace(to_replace=absorbances['sample name'][23], value='A880-A510', inplace=False, limit=None, regex=False, method='pad')
@@ -320,7 +320,7 @@ def slope_from_index(indeces):
 
 #################################################################################    
 
-def solve_for_conc(calib_indeces, sample_indeces):
+def solve_for_conc(calib_indices, sample_indices):
     '''INPUTS: 
     Phosphate concentrations of calibration [1D array]
     Absorbance values (mAU) [1D array]
@@ -335,8 +335,8 @@ def solve_for_conc(calib_indeces, sample_indeces):
     calib_y = []
 
     
-#Extracting list of absorbance values from calibration curve, using x and calib_indeces inputs. 
-    for number in calib_indeces:
+#Extracting list of absorbance values from calibration curve, using x and calib_indices inputs. 
+    for number in calib_indices:
         absorbances[number] = pd.read_csv('master_data/sample_'+str(number)+'.pfl', delimiter='\t', nrows=30)
         absorbances[number] = absorbances[number].replace(to_replace=absorbances[number]['sample name'][23], value='A880-A510', inplace=False, limit=None, regex=False, method='pad')
         absorbances[number] = absorbances[number].replace(to_replace=absorbances[number]['sample name'][16], value='A880-A775', inplace=False, limit=None, regex=False, method='pad')
@@ -349,12 +349,12 @@ def solve_for_conc(calib_indeces, sample_indeces):
         calib_y.append(abslist) 
         
         
-#Extracting list of absorbance values from measured sample with unknown PO4 concentration, using sample_indeces inputs.     
+#Extracting list of absorbance values from measured sample with unknown PO4 concentration, using sample_indices inputs.     
     absorbances = dict()
     A880_A510 = dict()
     sample_y = []
 
-    for number in sample_indeces:
+    for number in sample_indices:
         absorbances[number] = pd.read_csv('master_data/sample_'+str(number)+'.pfl', delimiter='\t', nrows=30)
         absorbances[number] = absorbances[number].replace(to_replace=absorbances[number]['sample name'][23], value='A880-A510', inplace=False, limit=None, regex=False, method='pad')
         absorbances[number] = absorbances[number].replace(to_replace=absorbances[number]['sample name'][16], value='A880-A775', inplace=False, limit=None, regex=False, method='pad')
