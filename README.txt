@@ -6,7 +6,7 @@ Full description of FloZF software can be found at: https://www.globalfia.com/st
 
 Requirements for running notebook:
 
- - Directory of raw FloZF files in master_data directory, as follows: pFI_Analysis/master_data/
+ - Directory of raw FloZF files in master_data directory, as follows: MS263_Final/master_data/
 
  - Import all necessary packages and modules (also embedded in notebook):
 import pfi
